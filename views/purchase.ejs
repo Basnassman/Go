@@ -1,0 +1,91 @@
+<% layout('layout') %>
+<section class="py-8">
+  <h1 class="text-3xl font-bold">Purchase</h1>
+    <p class="mt-2 text-slate-600">Connect Phantom or Solflare (Devnet). Merchant: <code><%= SITE.merchant %></code></p>
+      <div class="mt-6 flex flex-wrap gap-3">
+          <button id="connect-phantom" class="rounded-xl border px-4 py-2 font-semibold hover:bg-slate-100">Connect Phantom</button>
+              <button id="connect-solflare" class="rounded-xl border px-4 py-2 font-semibold hover:bg-slate-100">Connect Solflare</button>
+                </div>
+                  <div id="status" class="mt-4 text-sm text-slate-700"></div>
+                    <div class="mt-8">
+                        <label class="block text-sm mb-2" for="amount">Amount (SOL, devnet)</label>
+                            <input id="amount" type="number" min="0" step="0.001" value="0.001" class="border rounded-lg px-3 py-2 w-40" />
+                                <button id="buy" class="ml-3 rounded-xl bg-indigo-600 px-5 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50" disabled>Buy</button>
+                                  </div>
+
+                                    <p class="mt-8 text-xs text-slate-500">Need wallets? <a class="underline" href="https://phantom.app/" target="_blank">Phantom</a> · <a class="underline" href="https://solflare.com/" target="_blank">Solflare</a></p>
+                                    </section>
+
+                                    <!-- Solana Web3.js -->
+                                    <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+                                    <script>
+                                      const { Connection, clusterApiUrl, SystemProgram, PublicKey, Transaction } = window.solanaWeb3;
+                                        const CLUSTER = '<%= SITE.cluster %>' || 'devnet';
+                                          const MERCHANT = new PublicKey('<%= SITE.merchant %>');
+                                            const connection = new Connection(clusterApiUrl(CLUSTER), 'confirmed');
+
+                                              const $status = document.getElementById('status');
+                                                const $buy = document.getElementById('buy');
+                                                  const $amount = document.getElementById('amount');
+
+                                                    let provider = null; // selected wallet provider
+                                                      let pubkey = null;
+
+                                                        function log(msg) {
+                                                            $status.innerHTML = `<div class="p-3 bg-slate-100 rounded-lg">${msg}</div>`;
+                                                              }
+
+                                                                async function connectPhantom() {
+                                                                    if (!window.solana?.isPhantom) {
+                                                                          return log('Phantom not found. Install it first.');
+                                                                              }
+                                                                                  const resp = await window.solana.connect({ onlyIfTrusted: false });
+                                                                                      provider = window.solana;
+                                                                                          pubkey = resp.publicKey;
+                                                                                              log(`Connected Phantom: <code>${pubkey.toBase58()}</code>`);
+                                                                                                  $buy.disabled = false;
+                                                                                                    }
+
+                                                                                                      async function connectSolflare() {
+                                                                                                          if (!window.solflare?.isSolflare) {
+                                                                                                                return log('Solflare not found. Install it first.');
+                                                                                                                    }
+                                                                                                                        await window.solflare.connect();
+                                                                                                                            provider = window.solflare;
+                                                                                                                                pubkey = provider.publicKey;
+                                                                                                                                    log(`Connected Solflare: <code>${pubkey.toBase58()}</code>`);
+                                                                                                                                        $buy.disabled = false;
+                                                                                                                                          }
+
+                                                                                                                                            async function buy() {
+                                                                                                                                                try {
+                                                                                                                                                      if (!provider || !pubkey) return log('Connect a wallet first.');
+                                                                                                                                                            const sol = parseFloat($amount.value || '0');
+                                                                                                                                                                  if (sol <= 0) return log('Enter a positive amount.');
+
+                                                                                                                                                                        const lamports = Math.round(sol * 1e9);
+                                                                                                                                                                              const ix = SystemProgram.transfer({ fromPubkey: pubkey, toPubkey: MERCHANT, lamports });
+
+                                                                                                                                                                                    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+                                                                                                                                                                                          const tx = new Transaction({ feePayer: pubkey, recentBlockhash: blockhash }).add(ix);
+
+                                                                                                                                                                                                // Phantom & Solflare both support signAndSendTransaction
+                                                                                                                                                                                                      const sig = await provider.signAndSendTransaction(tx);
+
+                                                                                                                                                                                                            // If wallet returns an object { signature }, handle both cases
+                                                                                                                                                                                                                  const signature = typeof sig === 'string' ? sig : (sig?.signature || sig?.signature?.toString?.() || '');
+
+                                                                                                                                                                                                                        log(`Submitted. Tx: <a class="underline" href="https://explorer.solana.com/tx/${signature}?cluster=${CLUSTER}" target="_blank">${signature}</a>`);
+
+                                                                                                                                                                                                                              await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed');
+                                                                                                                                                                                                                                    log(`✅ Confirmed. Tx: <a class="underline" href="https://explorer.solana.com/tx/${signature}?cluster=${CLUSTER}" target="_blank">${signature}</a>`);
+                                                                                                                                                                                                                                        } catch (e) {
+                                                                                                                                                                                                                                              console.error(e);
+                                                                                                                                                                                                                                                    log(`❌ Error: ${e.message || e}`);
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                          }
+
+                                                                                                                                                                                                                                                            document.getElementById('connect-phantom').addEventListener('click', connectPhantom);
+                                                                                                                                                                                                                                                              document.getElementById('connect-solflare').addEventListener('click', connectSolflare);
+                                                                                                                                                                                                                                                                document.getElementById('buy').addEventListener('click', buy);
+                                                                                                                                                                                                                                                                </script>

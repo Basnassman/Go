@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <%- include('partials/head', { title }) %>
+    <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+        <%- include('partials/navbar') %>
+            <main class="flex-1">
+                  <div class="max-w-6xl mx-auto px-4 py-8">
+                          <%- body || include(_view) %>
+                                </div>
+                                    </main>
+                                        <%- include('partials/footer') %>
+                                          </body>
+                                          </html>
