@@ -6,13 +6,17 @@ import compression from 'compression';
 import dotenv from 'dotenv';
 import pagesRouter from './routes/pages.js';
 import { fileURLToPath } from 'url';
-
+import expressLayouts from 'express-ejs-layouts';
 dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(expressLayouts);
+app.set('layout', 'layout'); // ملف views/layout.ejs
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
