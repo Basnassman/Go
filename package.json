@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "app.js",
+  "main": "Home.js",
   "scripts": {
-    "dev": "nodemon app.js",
    "start": "node app.js"
   },
   "keywords": [],
