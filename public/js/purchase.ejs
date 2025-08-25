@@ -1,0 +1,117 @@
+const { Connection, clusterApiUrl, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = solanaWeb3;
+
+let wallet = null;
+let provider = null;
+let connected = false;
+let network = "mainnet-beta";
+let userAddress = null;
+
+// ====== Connect Wallet ======
+document.getElementById("connectBtn").addEventListener("click", async () => {
+  if (window.solana && window.solana.isPhantom) {
+      provider = window.solana;
+        } else if (window.solflare && window.solflare.isSolflare) {
+            provider = window.solflare;
+              } else {
+                  alert("Phantom or Solflare wallet not found");
+                      return;
+                        }
+
+                          try {
+                              const resp = await provider.connect();
+                                  userAddress = resp.publicKey.toString();
+                                      connected = true;
+                                          document.getElementById("walletInfo").classList.remove("hidden");
+                                              document.getElementById("walletAddress").innerText = userAddress.slice(0, 4) + "..." + userAddress.slice(-4);
+                                                  updateBuyButton();
+                                                    } catch (err) {
+                                                        console.error("Wallet connect error:", err);
+                                                          }
+                                                          });
+
+                                                          // ====== Disconnect Wallet ======
+                                                          document.getElementById("disconnectBtn").addEventListener("click", () => {
+                                                            provider.disconnect();
+                                                              connected = false;
+                                                                document.getElementById("walletInfo").classList.add("hidden");
+                                                                  updateBuyButton();
+                                                                  });
+
+                                                                  // ====== Switch Network (Demo) ======
+                                                                  document.getElementById("switchBtn").addEventListener("click", () => {
+                                                                    const choice = prompt("Enter network: mainnet-beta / devnet / testnet", network);
+                                                                      if (choice) {
+                                                                          network = choice;
+                                                                              alert("Switched to: " + network);
+                                                                                  updateBuyButton();
+                                                                                    }
+                                                                                    });
+
+                                                                                    // ====== Price Calculator ======
+                                                                                    async function fetchPrice(symbol) {
+                                                                                      try {
+                                                                                          const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=solana,tether,usd-coin&vs_currencies=usd`);
+                                                                                              const data = await res.json();
+                                                                                                  if (symbol === "SOL") return data.solana.usd;
+                                                                                                      if (symbol === "USDT") return data.tether.usd;
+                                                                                                          if (symbol === "USDC") return data["usd-coin"].usd;
+                                                                                                            } catch (err) {
+                                                                                                                console.error("Price fetch error:", err);
+                                                                                                                  }
+                                                                                                                    return 0;
+                                                                                                                    }
+
+                                                                                                                    async function updateCalculator() {
+                                                                                                                      const symbol = document.getElementById("coinSelect").value;
+                                                                                                                        const amount = parseFloat(document.getElementById("coinAmount").value) || 0;
+                                                                                                                          const price = await fetchPrice(symbol);
+                                                                                                                            document.getElementById("usdValue").innerText = (amount * price).toFixed(2);
+                                                                                                                            }
+
+                                                                                                                            document.getElementById("coinSelect").addEventListener("change", updateCalculator);
+                                                                                                                            document.getElementById("coinAmount").addEventListener("input", updateCalculator);
+
+                                                                                                                            // ====== Buy Transaction ======
+                                                                                                                            document.getElementById("buyBtn").addEventListener("click", async () => {
+                                                                                                                              if (!connected || network !== "mainnet-beta") return alert("Connect wallet on Solana mainnet");
+
+                                                                                                                                const symbol = document.getElementById("coinSelect").value;
+                                                                                                                                  const amount = parseFloat(document.getElementById("coinAmount").value);
+                                                                                                                                    if (!amount || amount <= 0) return alert("Enter valid amount");
+
+                                                                                                                                      try {
+                                                                                                                                          const connection = new Connection(clusterApiUrl(network), "confirmed");
+
+                                                                                                                                              // Example: send SOL to treasury (replace with your treasury address)
+                                                                                                                                                  const treasury = new PublicKey("YourTreasuryWalletAddressHere");
+                                                                                                                                                      if (symbol === "SOL") {
+                                                                                                                                                            const tx = new Transaction().add(
+                                                                                                                                                                    SystemProgram.transfer({
+                                                                                                                                                                              fromPubkey: provider.publicKey,
+                                                                                                                                                                                        toPubkey: treasury,
+                                                                                                                                                                                                  lamports: amount * LAMPORTS_PER_SOL
+                                                                                                                                                                                                          })
+                                                                                                                                                                                                                );
+
+                                                                                                                                                                                                                      const signed = await provider.signTransaction(tx);
+                                                                                                                                                                                                                            const sig = await connection.sendRawTransaction(signed.serialize());
+                                                                                                                                                                                                                                  await connection.confirmTransaction(sig);
+                                                                                                                                                                                                                                        alert("Transaction successful! Signature: " + sig);
+                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                  alert("For USDT/USDC, SPL Token transfer logic needed (can add if required).");
+                                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                                        } catch (err) {
+                                                                                                                                                                                                                                                            console.error("Transaction error:", err);
+                                                                                                                                                                                                                                                                alert("Transaction failed: " + err.message);
+                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                  });
+
+                                                                                                                                                                                                                                                                  // ====== Enable/Disable Buy Button ======
+                                                                                                                                                                                                                                                                  function updateBuyButton() {
+                                                                                                                                                                                                                                                                    const btn = document.getElementById("buyBtn");
+                                                                                                                                                                                                                                                                      if (connected && network === "mainnet-beta") {
+                                                                                                                                                                                                                                                                          btn.classList.remove("disabled");
+                                                                                                                                                                                                                                                                            } else {
+                                                                                                                                                                                                                                                                                btn.classList.add("disabled");
+                                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                                  }

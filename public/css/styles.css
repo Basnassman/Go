@@ -1,0 +1,10 @@
+.purchase-container { text-align:center; padding:40px; }
+.btn-primary, .btn-buy { background:#6c5ce7; color:#fff; padding:12px 20px; border:none; border-radius:10px; cursor:pointer; }
+.btn-primary:hover { background:#4834d4; }
+.btn-secondary { background:#00cec9; color:#fff; padding:10px 16px; border:none; border-radius:8px; }
+.btn-danger { background:#d63031; color:#fff; padding:10px 16px; border:none; border-radius:8px; }
+.btn-buy.disabled { background:#636e72; cursor:not-allowed; }
+.coin-icons img { width:40px; margin:0 8px; }
+.calc-box { margin:20px auto; width:250px; padding:20px; border:1px solid #ddd; border-radius:10px; }
+.frep-label { margin:10px; font-weight:bold; color:#0984e3; }
+.hidden { display:none; }

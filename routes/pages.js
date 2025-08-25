@@ -6,5 +6,7 @@ router.get('/whitepaper', (req, res) => res.render('whitepaper', { title: 'White
 router.get('/airdrop', (req, res) => res.render('airdrop', { title: 'Airdrop' }));
 router.get('/how-to-buy', (req, res) => res.render('how-to-buy', { title: 'How to Buy' }));
 router.get('/purchase', (req, res) => res.render('purchase', { title: 'Purchase' }));
-
+router.get("/purchase", (req, res) => {
+      res.render("purchase", { title: "Purchase FREP Token" });
+      });
 export default router;
