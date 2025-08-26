@@ -1,36 +1,37 @@
-<main class="purchase-container">
-  <section class="wallet-section">
-      <button id="connectBtn" class="btn-primary">🔗 Connect Wallet</button>
-          <div id="walletInfo" class="hidden">
-                <span id="walletAddress"></span>
-                      <button id="switchBtn" class="btn-secondary">Switch Network</button>
-                            <button id="disconnectBtn" class="btn-danger">Disconnect</button>
-                                </div>
-                                  </section>
+<div class="purchase-container max-w-2xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
+        <h1 class="text-3xl font-bold text-center mb-6">شراء FREP</h1>
 
-                                    <section class="calculator-section">
-                                        <div class="coin-icons">
-                                              <img src="/img/solana.png" alt="SOL">
-                                                    <img src="/img/usdt.png" alt="USDT">
-                                                          <img src="/img/usdc.png" alt="USDC">
-                                                              </div>
-                                                                  <p class="frep-label">FREP = 0.001 $</p>
+          <!-- زر الاتصال بالمحفظة -->
+            <div class="text-center mb-6">
+                <button id="connectWallet" class="btn-primary">اتصال بالمحفظة</button>
+                    <button id="disconnectWallet" class="btn-secondary hidden">فصل المحفظة</button>
+                        <p id="walletAddress" class="mt-2 text-gray-600"></p>
+                          </div>
 
-                                                                      <div class="calc-box">
-                                                                            <select id="coinSelect">
-                                                                                    <option value="SOL">SOL</option>
-                                                                                            <option value="USDT">USDT</option>
-                                                                                                    <option value="USDC">USDC</option>
-                                                                                                          </select>
-                                                                                                                <input type="number" id="coinAmount" placeholder="Enter amount">
-                                                                                                                      <p>= <span id="usdValue">0</span> $</p>
-                                                                                                                          </div>
-                                                                                                                            </section>
+                            <!-- اختيار الشبكة -->
+                              <div class="text-center mb-6">
+                                  <button id="switchNetwork" class="btn-secondary hidden">تغيير الشبكة</button>
+                                      <p id="networkInfo" class="mt-2 text-gray-500"></p>
+                                        </div>
 
-                                                                                                                              <section class="action-section">
-                                                                                                                                  <button id="buyBtn" class="btn-buy disabled">Buy Now</button>
-                                                                                                                                    </section>
-                                                                                                                                    </main>
+                                          <!-- حاسبة -->
+                                            <div class="bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
+                                                <div class="flex justify-around mb-4">
+                                                      <img src="/img/solana.png" class="h-8" alt="Solana" />
+                                                            <img src="/img/usdt.png" class="h-8" alt="USDT" />
+                                                                  <img src="/img/usdc.png" class="h-8" alt="USDC" />
+                                                                      </div>
+                                                                          <p class="text-center text-gray-700">سعر FREP = 0.001$</p>
+                                                                              
+                                                                                  <input id="amountInput" type="number" placeholder="أدخل الكمية" class="input w-full mt-4" />
+                                                                                      <p id="usdValue" class="mt-2 text-gray-700 text-center"></p>
+                                                                                        </div>
 
-                                                                                                                                    <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
-                                                                                                                                    <script src="/js/purchase.js"></script>
+                                                                                          <!-- زر شراء -->
+                                                                                            <div class="text-center">
+                                                                                                <button id="buyNow" class="btn-buy" disabled>شراء الآن</button>
+                                                                                                  </div>
+                                                                                                  </div>
+
+                                                                                                  <!-- ربط ملف الجافاسكربت -->
+                                                                                                  <script src="/js/purchase.js"></script>
