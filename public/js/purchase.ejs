@@ -37,26 +37,44 @@ const wallets = {
 async function connectWallet(type) {
   if (!wallets[type]) return alert("المحفظة غير مدعومة");
   wallet = wallets[type];
-  await wallet.connect();
-  connected = true;
-  walletAddressEl.textContent = `العنوان: ${wallet.publicKey.toBase58().slice(0,6)}...${wallet.publicKey.toBase58().slice(-4)}`;
-  connectPhantomBtn.disabled = true;
-  connectSolflareBtn.disabled = true;
-  disconnectBtn.disabled = false;
-  switchBtn.disabled = false;
-  buyNowBtn.disabled = false;
+  try {
+    await wallet.connect();
+    connected = true;
+    walletAddressEl.textContent = `العنوان: ${wallet.publicKey.toBase58().slice(0,6)}...${wallet.publicKey.toBase58().slice(-4)}`;
+
+    connectPhantomBtn.disabled = true;
+    connectSolflareBtn.disabled = true;
+
+    disconnectBtn.disabled = false;
+    switchBtn.disabled = false;
+    buyNowBtn.disabled = false;
+
+    // إظهار الأزرار المخفية
+    disconnectBtn.classList.remove("hidden");
+    switchBtn.classList.remove("hidden");
+
+  } catch (err) {
+    alert("فشل الاتصال بالمحفظة: " + err.message);
+  }
 }
 
 // فصل المحفظة
 async function disconnectWallet() {
-  for (let key in wallets) await wallets[key].disconnect();
+  for (let key in wallets) {
+    try { await wallets[key].disconnect(); } catch {}
+  }
   connected = false;
   walletAddressEl.textContent = "";
+
   connectPhantomBtn.disabled = false;
   connectSolflareBtn.disabled = false;
   disconnectBtn.disabled = true;
   switchBtn.disabled = true;
   buyNowBtn.disabled = true;
+
+  // إخفاء الأزرار مرة ثانية
+  disconnectBtn.classList.add("hidden");
+  switchBtn.classList.add("hidden");
 }
 
 // تبديل الشبكة
