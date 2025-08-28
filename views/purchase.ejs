@@ -1,37 +1,43 @@
-<div class="purchase-container max-w-2xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
-        <h1 class="text-3xl font-bold text-center mb-6">شراء FREP</h1>
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FREEPAL - شراء FREP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-          <!-- زر الاتصال بالمحفظة -->
-            <div class="text-center mb-6">
-                <button id="connectWallet" class="btn-primary">اتصال بالمحفظة</button>
-                    <button id="disconnectWallet" class="btn-secondary hidden">فصل المحفظة</button>
-                        <p id="walletAddress" class="mt-2 text-gray-600"></p>
-                          </div>
+<div class="purchase-container">
+  <h1>شراء FREP</h1>
 
-                            <!-- اختيار الشبكة -->
-                              <div class="text-center mb-6">
-                                  <button id="switchNetwork" class="btn-secondary hidden">تغيير الشبكة</button>
-                                      <p id="networkInfo" class="mt-2 text-gray-500"></p>
-                                        </div>
+  <!-- أزرار الاتصال -->
+  <div class="text-center mb-6">
+    <button id="connectPhantom" class="btn-primary">اتصل بـ Phantom</button>
+    <button id="connectSolflare" class="btn-primary">اتصل بـ Solflare</button>
+    <button id="disconnectWallet" class="btn-secondary hidden">فصل المحفظة</button>
+    <p id="walletAddress" class="mt-2 text-gray-600"></p>
+  </div>
 
-                                          <!-- حاسبة -->
-                                            <div class="bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
-                                                <div class="flex justify-around mb-4">
-                                                      <img src="/img/solana.png" class="h-8" alt="Solana" />
-                                                            <img src="/img/usdt.png" class="h-8" alt="USDT" />
-                                                                  <img src="/img/usdc.png" class="h-8" alt="USDC" />
-                                                                      </div>
-                                                                          <p class="text-center text-gray-700">سعر FREP = 0.001$</p>
-                                                                              
-                                                                                  <input id="amountInput" type="number" placeholder="أدخل الكمية" class="input w-full mt-4" />
-                                                                                      <p id="usdValue" class="mt-2 text-gray-700 text-center"></p>
-                                                                                        </div>
+  <!-- تبديل الشبكة -->
+  <div class="text-center mb-6">
+    <button id="switchNetwork" class="btn-secondary hidden">تغيير الشبكة</button>
+    <p id="networkInfo" class="mt-2 text-gray-500">الشبكة: devnet</p>
+  </div>
 
-                                                                                          <!-- زر شراء -->
-                                                                                            <div class="text-center">
-                                                                                                <button id="buyNow" class="btn-buy" disabled>شراء الآن</button>
-                                                                                                  </div>
-                                                                                                  </div>
+  <!-- تفاصيل الشراء -->
+  <div class="bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
+    <p class="text-center text-gray-700">سعر FREP = 0.001$</p>
+    <input id="amountInput" type="number" placeholder="أدخل الكمية" />
+    <p id="usdValue" class="mt-2 text-gray-700 text-center">القيمة بالدولار: $0.0000</p>
+  </div>
 
-                                                                                                  <!-- ربط ملف الجافاسكربت -->
-                                                                                                  <script src="/js/purchase.js"></script>
+  <!-- زر الشراء -->
+  <div class="text-center">
+    <button id="buyNow" class="btn-buy" disabled>شراء الآن</button>
+  </div>
+</div>
+
+<script type="module" src="purchase.js"></script>
+</body>
+</html>                                                                                                 <script src="/js/purchase.js"></script>
