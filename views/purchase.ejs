@@ -1,40 +1,43 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FREEPAL - شراء FREP</title>
+  <title>FREP Purchase</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <div class="purchase-container">
-  <h1>شراء FREP</h1>
+  <h1>Buy FREP</h1>
 
-  <!-- أزرار الاتصال -->
-  <div class="text-center mb-6">
-    <button id="connectPhantom" class="btn-primary">اتصل بـ Phantom</button>
-    <button id="connectSolflare" class="btn-primary">اتصل بـ Solflare</button>
-    <button id="disconnectWallet" class="btn-secondary hidden">فصل المحفظة</button>
-    <p id="walletAddress" class="mt-2 text-gray-600"></p>
+  <!-- Wallet Controls -->
+  <div class="wallet-controls">
+    <button id="connectWallet" class="btn-primary">Connect Wallet</button>
+    <select id="walletOptions" class="hidden">
+      <option value="">-- Select Wallet --</option>
+      <option value="phantom">Phantom</option>
+      <option value="solflare">Solflare</option>
+    </select>
+    <button id="disconnectWallet" class="btn-secondary hidden">Disconnect</button>
+    <p id="walletAddress" class="wallet-info"></p>
   </div>
 
-  <!-- تبديل الشبكة -->
-  <div class="text-center mb-6">
-    <button id="switchNetwork" class="btn-secondary hidden">تغيير الشبكة</button>
-    <p id="networkInfo" class="mt-2 text-gray-500">الشبكة: devnet</p>
+  <!-- Network Info -->
+  <div class="network-info">
+    <p id="networkInfo">Network: devnet</p>
   </div>
 
-  <!-- تفاصيل الشراء -->
-  <div class="bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
-    <p class="text-center text-gray-700">سعر FREP = 0.001$</p>
-    <input id="amountInput" type="number" placeholder="أدخل الكمية" />
-    <p id="usdValue" class="mt-2 text-gray-700 text-center">القيمة بالدولار: $0.0000</p>
+  <!-- Purchase Section -->
+  <div class="purchase-box">
+    <p>FREP Price = $0.001</p>
+    <input id="amountInput" type="number" placeholder="Enter amount" />
+    <p id="usdValue">USD Value: $0.0000</p>
   </div>
 
-  <!-- زر الشراء -->
-  <div class="text-center">
-    <button id="buyNow" class="btn-buy" disabled>شراء الآن</button>
+  <!-- Buy Button -->
+  <div class="buy-section">
+    <button id="buyNow" class="btn-buy" disabled>Buy Now</button>
   </div>
 </div>
 
