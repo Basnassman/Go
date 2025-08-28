@@ -2,11 +2,10 @@ import { Connection, PublicKey, clusterApiUrl, Transaction, SystemProgram, LAMPO
 import { PhantomWalletAdapter } from "https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-phantom@0.9.28/+esm";
 import { SolflareWalletAdapter } from "https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-solflare@0.6.32/+esm";
 
-// عناصر HTML
-const connectPhantomBtn = document.getElementById("connectPhantom");
-const connectSolflareBtn = document.getElementById("connectSolflare");
+// HTML elements
+const connectWalletBtn = document.getElementById("connectWallet");
+const walletOptions = document.getElementById("walletOptions");
 const disconnectBtn = document.getElementById("disconnectWallet");
-const switchBtn = document.getElementById("switchNetwork");
 const walletAddressEl = document.getElementById("walletAddress");
 const buyNowBtn = document.getElementById("buyNow");
 const amountInput = document.getElementById("amountInput");
@@ -18,85 +17,72 @@ let connected = false;
 let currentNetwork = "devnet";
 let connection = new Connection(clusterApiUrl(currentNetwork), "confirmed");
 
-// سعر FREP بالدولار
+// FREP Price
 const FREP_PRICE = 0.001;
 
-// تحديث قيمة الدولار
+// Live Calculator
 amountInput.addEventListener("input", () => {
   const amount = parseFloat(amountInput.value) || 0;
-  usdValueEl.textContent = `القيمة بالدولار: $${(amount * FREP_PRICE).toFixed(4)}`;
+  usdValueEl.textContent = `USD Value: $${(amount * FREP_PRICE).toFixed(4)}`;
 });
 
-// إعداد المحافظ
+// Wallet Adapters
 const wallets = {
   phantom: new PhantomWalletAdapter(),
   solflare: new SolflareWalletAdapter(),
 };
 
-// توصيل المحفظة
-async function connectWallet(type) {
-  if (!wallets[type]) return alert("المحفظة غير مدعومة");
+// Show wallet options
+connectWalletBtn.addEventListener("click", () => {
+  walletOptions.classList.remove("hidden");
+});
+
+// Connect selected wallet
+walletOptions.addEventListener("change", async () => {
+  const type = walletOptions.value;
+  if (!wallets[type]) return alert("Wallet not supported");
+
   wallet = wallets[type];
   try {
     await wallet.connect();
     connected = true;
-    walletAddressEl.textContent = `العنوان: ${wallet.publicKey.toBase58().slice(0,6)}...${wallet.publicKey.toBase58().slice(-4)}`;
 
-    connectPhantomBtn.disabled = true;
-    connectSolflareBtn.disabled = true;
-
-    disconnectBtn.disabled = false;
-    switchBtn.disabled = false;
+    walletAddressEl.textContent = `Address: ${wallet.publicKey.toBase58().slice(0,6)}...${wallet.publicKey.toBase58().slice(-4)}`;
     buyNowBtn.disabled = false;
 
-    // إظهار الأزرار المخفية
+    connectWalletBtn.classList.add("hidden");
+    walletOptions.classList.add("hidden");
     disconnectBtn.classList.remove("hidden");
-    switchBtn.classList.remove("hidden");
 
   } catch (err) {
-    alert("فشل الاتصال بالمحفظة: " + err.message);
+    alert("Connection failed: " + err.message);
   }
-}
+});
 
-// فصل المحفظة
-async function disconnectWallet() {
-  for (let key in wallets) {
-    try { await wallets[key].disconnect(); } catch {}
+// Disconnect Wallet
+disconnectBtn.addEventListener("click", async () => {
+  if (wallet) {
+    try { await wallet.disconnect(); } catch {}
   }
   connected = false;
   walletAddressEl.textContent = "";
-
-  connectPhantomBtn.disabled = false;
-  connectSolflareBtn.disabled = false;
-  disconnectBtn.disabled = true;
-  switchBtn.disabled = true;
   buyNowBtn.disabled = true;
 
-  // إخفاء الأزرار مرة ثانية
+  connectWalletBtn.classList.remove("hidden");
+  walletOptions.classList.add("hidden");
   disconnectBtn.classList.add("hidden");
-  switchBtn.classList.add("hidden");
-}
+});
 
-// تبديل الشبكة
-async function switchNetwork() {
-  const choice = prompt("اختر الشبكة: mainnet-beta / devnet / testnet");
-  if (!choice) return;
-  currentNetwork = choice;
-  connection = new Connection(clusterApiUrl(currentNetwork), "confirmed");
-  networkInfoEl.textContent = `الشبكة: ${currentNetwork}`;
-  buyNowBtn.disabled = currentNetwork !== "devnet";
-}
-
-// تنفيذ عملية الشراء
-async function buyNow() {
-  if (!connected) return alert("اتصل بالمحفظة أولاً");
-  if (currentNetwork !== "devnet") return alert("جرّب على شبكة Devnet فقط الآن");
+// Buy Now
+buyNowBtn.addEventListener("click", async () => {
+  if (!connected) return alert("Please connect a wallet first");
+  if (currentNetwork !== "devnet") return alert("Only devnet is supported now");
 
   const amount = parseFloat(amountInput.value);
-  if (!amount || amount <= 0) return alert("أدخل كمية صالحة");
+  if (!amount || amount <= 0) return alert("Enter a valid amount");
 
   const lamports = amount * FREP_PRICE * LAMPORTS_PER_SOL;
-  const treasury = new PublicKey("ضع_عنوان_محفظتك_على_Devnet"); // ضع عنوان محفظتك التجريبية
+  const treasury = new PublicKey("PUT_YOUR_DEVNET_WALLET_HERE"); // Replace with your test wallet
 
   const transaction = new Transaction().add(
     SystemProgram.transfer({
@@ -106,13 +92,10 @@ async function buyNow() {
     })
   );
 
-  const signature = await wallet.sendTransaction(transaction, connection);
-  alert(`تم إرسال العملية ✅\nالتوقيع: ${signature}`);
-}
-
-// ربط الأزرار
-connectPhantomBtn.addEventListener("click", () => connectWallet("phantom"));
-connectSolflareBtn.addEventListener("click", () => connectWallet("solflare"));
-disconnectBtn.addEventListener("click", disconnectWallet);
-switchBtn.addEventListener("click", switchNetwork);
-buyNowBtn.addEventListener("click", buyNow);
+  try {
+    const signature = await wallet.sendTransaction(transaction, connection);
+    alert(`Transaction sent ✅\nSignature: ${signature}`);
+  } catch (err) {
+    alert("Transaction failed: " + err.message);
+  }
+});
